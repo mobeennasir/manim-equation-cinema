@@ -1,0 +1,51 @@
+{
+  "mode": "parametric",
+  "preset": "butterfly",
+  "title": "Butterfly Curve",
+  "color": "#22d3ee",
+  "duration": 10.0,
+  "loops": null,
+  "lap_time": null,
+  "x_range": [
+    -4,
+    4
+  ],
+  "y_range": [
+    -4,
+    4
+  ],
+  "latex": "x(t)=\\sin(t)\\,(e^{\\cos t}-2\\cos 4t-\\sin^5\\tfrac{t}{12}),\\quad y(t)=\\cos(t)\\,(e^{\\cos t}-2\\cos 4t-\\sin^5\\tfrac{t}{12})",
+  "viral": 5,
+  "audio": "butterfly",
+  "curves": [
+    {
+      "mode": "parametric",
+      "x_expr": "sin(t)*(exp(cos(t)) - 2*cos(4*t) - sin(t/12)**5)",
+      "y_expr": "cos(t)*(exp(cos(t)) - 2*cos(4*t) - sin(t/12)**5)",
+      "t_min": 0,
+      "t_max": 37.69911184307752,
+      "color": "#22d3ee",
+      "label": "Butterfly Curve",
+      "gradient": [
+        "#fb7185",
+        "#22d3ee"
+      ]
+    }
+  ],
+  "story": "A butterfly drawn by one equation \u2014 wings that were never drawn, only calculated.",
+  "camera_style": "push-in",
+  "camera_note": "Push in close while the wings draw, then pull back to the full butterfly at the end.",
+  "text": {
+    "hook": "One equation. A butterfly.",
+    "payoff": "Drawn by maths, not by hand."
+  },
+  "simultaneous": false,
+  "gradient": [
+    "#fb7185",
+    "#22d3ee"
+  ],
+  "x_expr": "sin(t)*(exp(cos(t)) - 2*cos(4*t) - sin(t/12)**5)",
+  "y_expr": "cos(t)*(exp(cos(t)) - 2*cos(4*t) - sin(t/12)**5)",
+  "t_min": 0,
+  "t_max": 37.69911184307752
+}
