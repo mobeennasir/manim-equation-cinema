@@ -249,7 +249,7 @@ def _run_job(job, cfg, cfg_path, quality):
         result = subprocess.run(
             [sys.executable, "-m", "manim", "render", qflag, "--format=mp4",
              "-o", job, "scene.py", "EquationCinema"],
-            cwd=BASE, env=env, timeout=900,
+            cwd=BASE, env=env, timeout=1800,
         )
         if result.returncode != 0:
             raise RuntimeError("Manim failed to render this equation.")
@@ -588,7 +588,7 @@ PAGE = """
       <div class="field"><label for="color">Colour</label><input id="color" name="color" value="#22d3ee"></div>
     </div>
     <div class="row">
-      <div class="field"><label for="quality">Quality</label><select id="quality" name="quality"><option value="medium">720p (recommended)</option><option value="low">480p (fast test)</option><option value="high">1080p (slow)</option></select></div>
+      <div class="field"><label for="quality">Quality</label><select id="quality" name="quality"><option value="low" selected>480p (recommended on the free server)</option><option value="medium">720p (slow on the free server)</option><option value="high">1080p (slow)</option></select><p class="hint">Heavy presets (Pi, Lorenz, Butterfly) render much faster at 480p on the free server.</p></div>
       <div class="field"><label for="camera">Camera movement</label><select id="camera" name="camera"><option value="on">On: slow zoom (cinematic)</option><option value="off">Off: fixed camera</option></select></div>
     </div>
     <div class="actions">
@@ -672,9 +672,9 @@ WAITING = """
   <div class="curve">{{ curve_svg | safe }}</div>
   <h1>Your video is rendering</h1>
   <p class="lead">{{ title }}. Manim is drawing it now.</p>
-  <p class="stage" id="stage">Writing the equation</p>
+  <p class="stage">Still drawing. The free server is slow.</p>
   <div class="meter" role="progressbar" aria-label="Rendering progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="meter"><span id="bar"></span></div>
-  <p class="meta"><span id="clock">0s</span> elapsed. Renders take 30 seconds to a few minutes on the free server. Stages are approximate.</p>
+  <p class="meta"><span id="clock">0s</span> elapsed, of a 30 minute limit. A simple video takes about a minute. A heavy preset can take 10 to 20 minutes at 720p. 480p is much faster.</p>
   <p class="meta">You can close this tab. Your video will be in Your videos on the home page when it is ready.</p>
   <div class="err" id="err" role="alert"{% if not error %} hidden{% endif %}>{{ error }} <a href="/">Back to the form</a></div>
   {% if not error %}<p class="meta"><a href="/">Back to the form</a></p>{% endif %}
@@ -687,27 +687,20 @@ WAITING = """
   var bar = document.getElementById("bar");
   var meter = document.getElementById("meter");
   var clock = document.getElementById("clock");
-  var stage = document.getElementById("stage");
-  var stages = ["Writing the equation", "Drawing the curve", "Lighting the scene", "Encoding the video"];
-  var si = 0;
   setInterval(function () {
     var s = Math.floor((Date.now() - start) / 1000);
     clock.textContent = s + "s";
-    var pct = Math.min(100, Math.round(s / 90 * 100));
+    var pct = Math.min(100, Math.round(s / 1800 * 100));
     bar.style.width = pct + "%";
     meter.setAttribute("aria-valuenow", String(pct));
   }, 1000);
-  setInterval(function () {
-    si = (si + 1) % stages.length;
-    stage.textContent = stages[si];
-  }, 4000);
   function poll() {
     fetch("/status/" + job).then(function (r) { return r.json(); }).then(function (d) {
       if (d.state === "done") { window.location = "/result/" + job; return; }
-      if (d.state === "error") {
+      if (d.state === "error" || d.state === "unknown") {
         var err = document.getElementById("err");
         err.hidden = false;
-        err.firstChild.textContent = (d.message || "The render failed.") + " ";
+        err.firstChild.textContent = (d.message || "This render was lost, the site may have restarted while it ran. Please render again.") + " ";
         return;
       }
       setTimeout(poll, 3000);
